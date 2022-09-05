@@ -8,9 +8,7 @@
 		"48": "icon.png",
 		"128": "icon.png"
 	},
-	"permissions": [
-		"contextMenus"
-	],
+	"permissions": [],
 	"content_scripts": [
 		{
 			"matches": [
