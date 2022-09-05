@@ -1,71 +1,12 @@
-$(document).ready(function() {
-    $('body').append("<div id=\"ec-bubble\"><div id=\"ec-bubble-text\"></div><div id=\"ec-bubble-close\"></div></div>");
-    
-    $('#ec-bubble-close').click(function() {
-        hideBubble();
-    });
-    
-	$(document).dblclick(function(e) {
-		processSelection(e);
-	});
-	
-	$(document).bind('mouseup', function(e) {
-		processSelection(e);
-	});
-
+let previousTitle;
+document.addEventListener('selectionchange', () => {
+    const text = window.getSelection().toString();
+    if(/^[0-9]{10,13}$/.exec(text)) {
+        previousTitle = document.body.getAttribute('title');
+        document.body.setAttribute('title', new Date(+text.padEnd(13, '0')).toISOString());
+    } else if(!previousTitle) {
+        document.body.removeAttribute('title');
+    } else {
+        document.body.setAttribute('title', previousTitle);
+    }
 });
-
-function processSelection(e) {	
-    var text = getSelectedText();
-
-    if ((text.length == 10 || text.length == 13) && $.isNumeric(text)) {
-	if (text.length == 13) {  // Handle millisecond timestamps
-	    text = text / 1000;
-	}
-        var humanReadableDate = convertTimestamp(text);
-	showBubble(e, humanReadableDate);        
-    }
-}
-
-function getSelectedText() {
-	var text = "";
-	
-    if (window.getSelection) {
-        text = window.getSelection().toString();
-    } else if (document.selection && document.selection.type != "Control") {
-        text = document.selection.createRange().text;
-    }
-	
-	return text;
-}
-
-function convertTimestamp(ts) {
-	var date = new Date(ts * 1000);
-	var dateStr = "";
-    
-    var d = date.getDate();
-    var m = date.getMonth()+1;
-    var y = date.getFullYear();
-    dateStr += (m<=9?'0'+m:m) + "/" + (d<=9?'0'+d:d) + "/" + y + " - ";
-  
-    var h = date.getHours();
-    var mi = date.getMinutes();
-    var s = date.getSeconds(); 
-    dateStr += (h<=9?'0'+h:h) + ":" + (mi<=9?'0'+mi:mi) + ":" + (s<=9?'0'+s:s);
-    
-	return dateStr;
-}
-
-function showBubble(e, text) {
-    $('#ec-bubble').css('top', e.pageY + 20 + "px");
-    $('#ec-bubble').css('left', e.pageX - 85 + "px");
-    $('#ec-bubble-text').html(text);
-    $('#ec-bubble').css('visibility', 'visible');
-}
-
-function hideBubble() {
-    $('#ec-bubble').css('visibility', 'hidden');
-    $('#ec-bubble-text').html("");
-}
-
-
